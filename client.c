@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
     char ipstr[INET_ADDRSTRLEN];
 
     if (argc != 3) {
-        fprintf(stderr, "must pass hostname and port as arguments");
+        fprintf(stderr, "must pass hostname and port as arguments\n");
         return 1;
     }
 

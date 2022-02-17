@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
 
 
     if (argc < 2) {
-        fprintf(stderr, "must pass port as argument");
+        fprintf(stderr, "must pass port as argument\n");
         return 1;
     }
 
