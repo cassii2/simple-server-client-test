@@ -63,8 +63,8 @@ int main(int argc, char **argv) {
     else 
         msg = "wow how did you get here";
     int bytes_left = strlen(msg);
+    char *uhh = malloc(sizeof(char) * 100);
     while (bytes_left != 0) {
-        char *uhh = malloc(sizeof(char) * 100);
         recv(newfd, uhh, sizeof(char) * 100, 0);
         int bytes_sent = send(newfd, msg + (strlen(msg) - bytes_left), bytes_left, 0);
         if (bytes_sent != -1) {
@@ -73,6 +73,7 @@ int main(int argc, char **argv) {
         bytes_left -= bytes_sent;
         printf("Bytes sent: %d\nBytes left: %d\n", bytes_sent, bytes_left);
     }
+    printf("Received from other:\n%s\n", uhh);
     shutdown(newfd, SHUT_RDWR);
 
     freeaddrinfo(res);
