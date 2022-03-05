@@ -1,11 +1,18 @@
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef linux
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#define SHUTDOWNOPT SHUT_RDWR
+#elif defined(_WIN32)
+#include <ws2def.h>
+#include <WinSock2.h>
+#define SHUTDOWNOPT SD_BOTH
+#endif
 
 int main(int argc, char **argv) {
   struct addrinfo hints, *res, *p;
@@ -93,8 +100,7 @@ int main(int argc, char **argv) {
     printf("Bytes sent: %d\nBytes left: %d\n", bytes_sent, bytes_left);
   }
   printf("Received from other:\n%s\n", uhh);
-  shutdown(newfd, SHUT_RDWR);
-
+  shutdown(newfd, SHUTDOWNOPT);
   freeaddrinfo(res);
 
   return 0;
