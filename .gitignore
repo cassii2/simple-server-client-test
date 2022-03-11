@@ -52,6 +52,5 @@ Mkfile.old
 dkms.conf
 
 .vscode/
-client
-main
-showip
+run
+*.o
