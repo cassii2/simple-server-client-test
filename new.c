@@ -31,4 +31,6 @@ int main(int argc, char **argv) {
   send_data(newsock, html, htmlsize);
 
   // TODO: cleanup/close newsock and sock
+  deinit_connection(newsock);
+  deinit_connection(socket);
 }

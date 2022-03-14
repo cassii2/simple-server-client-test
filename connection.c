@@ -53,6 +53,7 @@ int init_connection(enum IPINFO ipv, const char *port) {
   freeaddrinfo(res);
   return sock;
 }
+void deinit_connection(int sock) { shutdown(sock, SHUTDOWNOPT); }
 
 // Waits for a connection to SOCKET, and returns the new socket for that
 // connection
@@ -77,6 +78,7 @@ void send_data(int sock, char *data, unsigned int size) {
     bytes_left -= bytes_sent;
   }
 }
+
 char *receive_data(int sock, int *size) {
   int datasize = 9;
   int pointer = 0;
@@ -88,7 +90,7 @@ char *receive_data(int sock, int *size) {
   pfds.fd = sock;
   pfds.events = POLLIN;
 
-  while (poll(&pfds, 1, 2000) > 0) {
+  while (poll(&pfds, 1, 5) > 0) {
     if (pfds.revents & POLLIN) {
       int received = recv(pfds.fd, data + pointer, sizeof(char) * 8, 0);
       datasize += received;
