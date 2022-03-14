@@ -1,9 +1,11 @@
 #include "connection.h"
 
 #include <asm-generic/socket.h>
+#include <poll.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/poll.h>
 #ifdef linux
 #include <arpa/inet.h>
 #include <netdb.h>
@@ -76,17 +78,39 @@ void send_data(int sock, char *data, unsigned int size) {
   }
 }
 char *receive_data(int sock, int *size) {
-  char *target = (char *)calloc(8, sizeof(char));
+  int datasize = 9;
+  int pointer = 0;
+  char *data = calloc(datasize, sizeof(char));
 
-  unsigned int bytes_received = 1;
-  unsigned int count = 8;
-  while (bytes_received != 0) {
-    target = (char *)realloc(target, sizeof(char) * count);
-    memset(target + count, 0, strlen(target) - count);
-    unsigned int bytes_received = recv(sock, target, sizeof(char) * 8, 0);
-    count += bytes_received;
+  struct pollfd pfds;
+  memset(&pfds, 0, sizeof(struct pollfd));
+
+  pfds.fd = sock;
+  pfds.events = POLLIN;
+
+  while (poll(&pfds, 1, 2000) > 0) {
+    if (pfds.revents & POLLIN) {
+      int received = recv(pfds.fd, data + pointer, sizeof(char) * 8, 0);
+      datasize += received;
+      pointer += received;
+    }
+    /* else if (pfds.revents & (POLLHUP | POLLERR)) */
+    /*   break; */
+    else
+      break;
+
+    char *newdata = realloc(data, sizeof(char) * datasize);
+    if (newdata != NULL)
+      data = newdata;
+    else {
+      free(data);
+      fprintf(stderr, "realloc returned NULL\n");
+      exit(7);
+    }
+
+    memset(data + pointer, 0, datasize - pointer);
+    pfds.revents = 0;
   }
 
-  *size = count;
-  return target;
+  return data;
 }

@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
   char *file = argv[2];
 
   int socket = init_connection(IPV4, port);
+  // TODO: Actually make it respond to the data the browser sends
   char *predata = "HTTP/1.1 200 OK\nContent-Type: text/html\n\n";
 
   FILE *fs = fopen(argv[2], "r");
@@ -23,7 +24,11 @@ int main(int argc, char **argv) {
   fread(html, sizeof(char), htmlsize, fs);
 
   int newsock = get_newconnection(socket);
-  receive_data(newsock, NULL);
+  char *data = receive_data(newsock, NULL);
+  printf("Received:-------\n%s\n----------------\n", data);
+  free(data);
   send_data(newsock, predata, strlen(predata));
   send_data(newsock, html, htmlsize);
+
+  // TODO: cleanup/close newsock and sock
 }
